@@ -6,13 +6,19 @@ import (
 	stlog "log"
 
 	"github.com/HsiaoCz/geek/distributed/log"
+	"github.com/HsiaoCz/geek/distributed/registry"
 	"github.com/HsiaoCz/geek/distributed/service"
 )
 
 func main() {
 	log.Run("./distributed.log")
 	host, port := "localhost", "8081"
-	ctx, err := service.Start(context.Background(), "log service", host, port, log.RegisterHandlers)
+	serviceAddr := fmt.Sprintf("http://%s:%s", host, port)
+	r := registry.Registration{
+		ServiceName: "log service",
+		ServiceURL:  serviceAddr,
+	}
+	ctx, err := service.Start(context.Background(), r, host, port, log.RegisterHandlers)
 	if err != nil {
 		stlog.Fatalln(err)
 	}
