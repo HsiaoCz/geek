@@ -2,6 +2,8 @@ package registry
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"sync"
@@ -20,6 +22,18 @@ func (r *registry) add(reg Registration) error {
 	defer r.mutex.Unlock()
 	r.registerations = append(r.registerations, reg)
 	return nil
+}
+
+func (r *registry) remove(url string) error {
+	for i := range r.registerations {
+		if reg.registerations[i].ServiceURL == url {
+			r.mutex.Lock()
+			reg.registerations = append(reg.registerations[:i], r.registerations...)
+			r.mutex.Unlock()
+			return nil
+		}
+	}
+	return fmt.Errorf("not found this service")
 }
 
 var reg = registry{
@@ -46,6 +60,21 @@ func (s RegistryService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	case http.MethodDelete:
+		payload, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		url := string(payload)
+		log.Printf("remove service at URL:%s", url)
+		err = reg.remove(url)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 	default:
