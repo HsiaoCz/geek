@@ -15,6 +15,7 @@ func TestBizServer(t *testing.T) {
 	r := gin.Default()
 	r.GET("/profile", Profile)
 	r.POST("/login", Login)
+	r.POST("/sso", SSO)
 	t.Fatal(r.Run(":9091"))
 }
 
@@ -69,4 +70,8 @@ func Login(c *gin.Context) {
 	if usname == username {
 		c.Next()
 	}
+}
+
+func SSO(c *gin.Context) {
+
 }
