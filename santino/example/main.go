@@ -1,7 +1,9 @@
 package main
 
 import (
+	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +27,16 @@ type UserRegister struct {
 	RePassword string `json:"re_password"`
 }
 
+func GenIdentity() int {
+	random := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return random.Intn(1000000)
+}
+
 func main() {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 	r.POST("/user/register", HandleUserRegister)
+	r.GET("/user/:id", HandleGetUserByID)
 	srv := http.Server{
 		Handler:      r,
 		Addr:         Addr,
@@ -50,7 +58,50 @@ func HandleUserRegister(c *gin.Context) {
 		})
 		return
 	}
+	user := User{
+		Identity: GenIdentity(),
+		Username: userR.Username,
+		Password: userR.Password,
+		Content:  "Hello Hello My man",
+		Article:  []string{"斗破苍穹", "我欲封天"},
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"Message": "注册成功",
+		"Data":    user,
+	})
+}
+
+// 这里看一些gin的动态路由
+// 这在标准库是实现不了的
+// 为什么呢？
+
+// 我们在注册路由的时候，是没法写成这种形式的
+// 所以在路由匹配的时候，写成/user/12333
+// 也匹配不到我们注册的HandleFunc
+
+// 那么这里的问题就是
+// 如何匹配到动态路由呢？
+// 如何匹配带有统配符的路由呢？
+// 如何简单的实现RESTful API呢？
+// 以及中间件等问题，这些问题就是我们实现自己的框架的意义
+// 或者说，使用web框架可以帮我们更友好的去实现一些功能
+
+func HandleGetUserByID(c *gin.Context) {
+	id := c.Param("id")
+	userId, err := strconv.Atoi(id)
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	user := User{
+		Identity: userId,
+		Username: "zhangsan",
+		Password: "122334",
+		Content:  "hello my man",
+		Article:  []string{"斗破苍穹", "逆天邪神"},
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "查询成功",
+		"Data":    user,
 	})
 }
