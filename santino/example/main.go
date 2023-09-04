@@ -27,6 +27,15 @@ type UserRegister struct {
 	RePassword string `json:"re_password"`
 }
 
+type Book struct {
+	Identity int    `json:"identity"`
+	BookName string `json:"book_name"`
+	Auther   string `json:"auther"`
+	Title    string `json:"title"`
+	BookType string `json:"book_type"`
+	Summery  string `json:"summery"`
+}
+
 func GenIdentity() int {
 	random := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return random.Intn(1000000)
@@ -37,6 +46,7 @@ func main() {
 	r.Use(gin.Logger(), gin.Recovery())
 	r.POST("/user/register", HandleUserRegister)
 	r.GET("/user/:id", HandleGetUserByID)
+	r.GET("/book", HandleGetBookByQuery)
 	srv := http.Server{
 		Handler:      r,
 		Addr:         Addr,
@@ -103,5 +113,27 @@ func HandleGetUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Message": "查询成功",
 		"Data":    user,
+	})
+}
+
+// 这里试一下获取url上的参数
+func HandleGetBookByQuery(c *gin.Context) {
+	id := c.Query("id")
+	bookId, err := strconv.Atoi(id)
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	book := Book{
+		Identity: bookId,
+		BookName: "斗破苍穹",
+		Auther:   "唐家三少",
+		Title:    "中原五白的书",
+		BookType: "小白文",
+		Summery:  "少年的逆袭之路",
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "查询成功",
+		"Data":    book,
 	})
 }
