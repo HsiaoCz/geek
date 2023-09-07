@@ -41,3 +41,9 @@ func (c *ConBlockQueue[T]) IsEmpty() bool {
 func (c *ConBlockQueue[T]) Len() uint64 {
 	return 0
 }
+
+func New[T any](size int) *ConBlockQueue[T] {
+	return &ConBlockQueue[T]{
+		data: make([]T, 0, size),
+	}
+}
