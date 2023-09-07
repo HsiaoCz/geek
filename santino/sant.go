@@ -53,3 +53,6 @@ func (s *Santino) TRACE(pattern string, handlefunc HandleFunc)   {}
 func (s *Santino) OPTIONS(pattern string, handlefunc HandleFunc) {}
 func (s *Santino) PATCH(pattern string, handlefunc HandleFunc)   {}
 func (s *Santino) CONNECT(pattern string, handlefunc HandleFunc) {}
+
+// 匹配没匹配到的
+func (s *Santino) Any(pattern string, handlefunc HandleFunc) {}
