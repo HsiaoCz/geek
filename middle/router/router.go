@@ -10,6 +10,7 @@ import (
 
 func RegisterRouter(addr string) {
 	http.HandleFunc("/user/register", controller.HandleUserRegister)
+	http.HandleFunc("/user/login", controller.HandleUserLogin)
 	srv := http.Server{
 		Handler:      nil,
 		Addr:         addr,

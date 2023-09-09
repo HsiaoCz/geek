@@ -25,3 +25,17 @@ func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
 	}
 	ResponseJSON(w, http.StatusOK, "注册成功", nil)
 }
+
+func HandleUserLogin(w http.ResponseWriter, r *http.Request) {
+	userL := new(UserL)
+	err := json.NewDecoder(r.Body).Decode(userL)
+	if err != nil {
+		ResponseJSON(w, http.StatusOK, "请求参数出错", nil)
+		return
+	}
+	if err := mysql.GetUserByUsernameAndPassword(userL.Username, userL.Password); err != nil {
+		ResponseJSON(w, http.StatusOK, "请检查用户名和密码", nil)
+		return
+	}
+	ResponseJSON(w, http.StatusOK, "登录成功", nil)
+}
