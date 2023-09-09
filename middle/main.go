@@ -1,6 +1,11 @@
 package main
 
-import "github.com/HsiaoCz/geek/middle/router"
+import (
+	"log"
+
+	"github.com/HsiaoCz/geek/middle/dao/mysql"
+	"github.com/HsiaoCz/geek/middle/router"
+)
 
 const (
 	addr = "127.0.0.1:9091"
@@ -8,4 +13,8 @@ const (
 
 func main() {
 	router.RegisterRouter(addr)
+	if err := mysql.InitMysql(); err != nil {
+		log.Println(err)
+		return
+	}
 }
