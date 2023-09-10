@@ -16,3 +16,10 @@ type UserL struct {
 	Password string `json:"passwrod"`
 	Email    string `json:"email"`
 }
+
+// 管理员登录时候使用的
+
+type AdminL struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
