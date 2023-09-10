@@ -39,3 +39,7 @@ func HandleUserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	ResponseJSON(w, http.StatusOK, "登录成功", nil)
 }
+
+func HandleUserPostArticle(w http.ResponseWriter, r *http.Request) {
+	
+}
