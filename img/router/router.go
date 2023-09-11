@@ -1,12 +1,14 @@
 package router
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/HsiaoCz/geek/img/api"
 )
 
-func RegRouter() {
+func RegRouter(addr string) {
 	// 用户注册
 	http.HandleFunc("/img/user/register", api.HandleUserRegister)
 	// 用户登录
@@ -21,4 +23,12 @@ func RegRouter() {
 	http.HandleFunc("/img/user/movef", api.HandleUserMoveF)
 	// 修改好友的昵称
 	http.HandleFunc("/img/user/modif", api.HandleUserModif)
+
+	srv := http.Server{
+		Handler:      nil,
+		Addr:         addr,
+		ReadTimeout:  1500 * time.Millisecond,
+		WriteTimeout: 1500 * time.Millisecond,
+	}
+	log.Fatal(srv.ListenAndServe())
 }
