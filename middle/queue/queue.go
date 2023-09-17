@@ -20,7 +20,8 @@ import (
 // 2、需要给队列一个最大长度限制，超过这个限制就不能入队了，这里也要思考一下，如果数据不能入队了怎么办？
 // 直接返回吗？可以使用临时表来存储数据，然后当队列有空闲的时候，再添加到队列里面
 
-// 3、怎么保证数据不重复入队？
+// 3、怎么保证数据不重复入队？这个问题解决起来就很简单
+// 这里使用一个map[string]struct{}{}来实现
 // 4、怎么保证不重复消费数据？这个不重复消费好说。因为出队之后数据就删除了
 // 5、因为出队之后数据就删除了，那么如果出队之后数据没看到，出了问题，现在想重新恢复之前的数据怎么办？
 
@@ -28,6 +29,7 @@ type ArtQueue struct {
 	data   []model.Article
 	lock   sync.Mutex
 	length int
+	maps   map[int]struct{}
 }
 
 // InQueue 入队
@@ -37,7 +39,11 @@ func (a *ArtQueue) InQueue(article model.Article) error {
 	if len(a.data) >= a.length {
 		return errors.New("数据已满")
 	}
+	if _, ok := a.maps[article.ArticleIdentity]; ok {
+		return errors.New("当前数据已入队")
+	}
 	a.data = append(a.data, article)
+	a.maps[article.ArticleIdentity] = struct{}{}
 	return nil
 }
 
@@ -50,6 +56,7 @@ func (a *ArtQueue) OutQueue() (v model.Article, err error) {
 	}
 	article := a.data[0]
 	a.data = a.data[1:]
+	delete(a.maps, article.ArticleIdentity)
 	return article, nil
 }
 
@@ -58,5 +65,6 @@ func NewArtQueue(length int) *ArtQueue {
 	return &ArtQueue{
 		data:   make([]model.Article, 0),
 		length: length,
+		maps:   make(map[int]struct{}),
 	}
 }

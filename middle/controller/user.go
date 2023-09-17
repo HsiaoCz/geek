@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/HsiaoCz/geek/middle/dao/mysql"
+	"github.com/HsiaoCz/geek/middle/model"
+	"github.com/HsiaoCz/geek/middle/queue"
 )
 
 func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
@@ -41,5 +43,11 @@ func HandleUserLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleUserPostArticle(w http.ResponseWriter, r *http.Request) {
-	
+	article := new(model.Article)
+	json.NewDecoder(r.Body).Decode(article)
+	err := queue.MQueue.InQueue(*article)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ResponseJSON(w, http.StatusOK, "提交成功", nil)
 }
