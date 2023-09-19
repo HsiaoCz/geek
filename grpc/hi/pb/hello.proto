@@ -1,0 +1,20 @@
+syntax="proto3";
+
+package pb;
+
+option go_package="./;pb";
+
+service Hello{
+    rpc HandleHello (HelloRequest) returns (HelloResponse){};
+}
+
+message HelloRequest{
+    string username=1;
+    string msg=2;
+    string content=3;
+}
+
+message HelloResponse{
+    string msg=1;
+    string username=2;
+}
