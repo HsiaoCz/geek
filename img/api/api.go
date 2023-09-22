@@ -1,9 +1,26 @@
 package api
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // HandleUserRegister 用户注册
-func HandleUserRegister(w http.ResponseWriter, r *http.Request) {}
+func HandleUserRegister(w http.ResponseWriter, r *http.Request) {
+	userR := new(UserR)
+	err := json.NewDecoder(r.Body).Decode(userR)
+	if err != nil {
+		ResponseJSON(w, http.StatusOK, H{
+			"Msg": err,
+		})
+		return
+	}
+	if userR.Password != userR.RePassword {
+		ResponseJSON(w, http.StatusOK, H{
+			"Msg": "请检查用户名或密码",
+		})
+	}
+}
 
 // HandleUserLogin 用户登录
 func HandleUserLogin(w http.ResponseWriter, r *http.Request) {}
