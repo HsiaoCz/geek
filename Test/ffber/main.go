@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -64,6 +65,79 @@ app := fiber.New(fiber.Config{
 // type H map[string]any
 // 这个在fiber里面是fiber.Map
 
+type Person struct {
+	Name string `json:"name" form:"name"`
+	Pass string `json:"pass" form:"pass"`
+}
+
+// Cookie 的设置和删除
+type Cookie struct {
+	Name     string    `json:"name"`
+	Value    string    `json:"value"`
+	Path     string    `json:"path"`
+	Domain   string    `json:"domain"`
+	MaxAge   int       `json:"max_age"`
+	Expires  time.Time `json:"expires"`
+	Secure   bool      `json:"secure"`
+	HTTPOnly bool      `json:"http_only"`
+	SameSite string    `json:"same_site"`
+}
+
+// c.Download() 下载文件
+// c.SendFile() 发送文件
+
+/*
+获取form表单文件
+ file, _ := c.FormFile("5gmsg.conf")
+      // Save file to root directory:
+      fmt.Println("文件名称", file.Filename)
+      return c.SaveFile(file, fmt.Sprintf("./%s", file.Filename))
+*/
+
+/*
+获取多文件
+ //MultipartForm()。这将返回一个map[string][]string
+      if form, err := c.MultipartForm(); err == nil {
+         fmt.Println("输出表单信息,", form)
+         files := form.File["5gmsg.conf"]
+         fmt.Println("输出files信息,", files)
+         for _, file := range files {
+            fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
+            if err := c.SaveFile(file, fmt.Sprintf("./%s", file.Filename)); err != nil {
+               return c.SendString("上传失败！")
+            }
+         }
+      }
+      return c.SendString("上传成功！")
+*/
+
+// c.FormValue() 获取表单的值
+// c.Get() 获取请求头信息
+// c.IP(),c.IPS获取请求IP信息
+// c.Is("html") 这个方法判断content-type的类型
+//  c.XHR() // 判断是否XHRjQuery提交
+
+// 中间件之间的变量传递
+/*
+//全局的中间件中我们的设置一个参数值信息---
+   app.Use(func(c *fiber.Ctx) error {
+      c.Locals("user", "小钟同学-变量存贮传递")
+      return c.Next()
+   })
+   app.Get("/", func(c *fiber.Ctx) error {
+      return c.JSON(fiber.Map{
+         "name": c.Locals("user"),
+         "age":  2000,
+      })
+   })
+
+ */
+
+// c.Redirect 重定向
+// c.Params() 获取path参数
+// c.Query() 和c.QueryParse() 路径上的参数匹配
+// c.OriginUrl() 请求路径和参数
+// c.SendStream() 响应字节流
 func main() {
 	app := fiber.New()
 	// 路由 基础路由
@@ -87,6 +161,13 @@ func main() {
 	v1.Get("/he", Hello)
 	// 查看所有路由列表
 	// app.Stack()
+
+	// body解析
+	app.Post("/user/register", UserRegister)
+	// 设置cookie
+	app.Get("/cookie", SetCookie)
+	// 删除cookie
+	app.Post("/cookie")
 	app.Listen(addr)
 }
 
@@ -113,4 +194,34 @@ func GetBook(c *fiber.Ctx) error {
 	book_name := c.Query("book_name")
 	id := c.Query("id")
 	return c.Status(fiber.StatusOK).JSON(map[string]any{"message": "获取数据成功", "data": book_name + id})
+}
+
+// body参数解析
+func UserRegister(c *fiber.Ctx) error {
+	p := new(Person)
+	if err := c.BodyParser(p); err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"Message": "注册成功", "Data": p})
+}
+
+// 设置cookie
+func SetCookie(c *fiber.Ctx) error {
+	cookie := new(fiber.Cookie)
+	cookie.Name = "john"
+	cookie.Value = "doe"
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	// Set cookie
+	c.Cookie(cookie)
+	return c.SendString("设置cookie成功!")
+}
+
+// 删除cookie
+
+func DeleteCookie(c *fiber.Ctx) error {
+	//删除所有的ClearCookie
+	c.ClearCookie()
+	// 根据键值对删除
+	c.ClearCookie("user")
+	return c.SendString("删除cookie成功!")
 }
