@@ -14,13 +14,55 @@ const (
 )
 
 /*
+// 自定义初始化配置信息
 app := fiber.New(fiber.Config{
+	// 开启多进程 默认关闭
     Prefork:       true,
+    // 定义路由的大小写问题，开启之后/foo /Foo 将是不同的路由
     CaseSensitive: true,
+	// 开启之后,/foo 和 /foo/将是不同的路由，否则路由时相同的
     StrictRouting: true,
+	// 定义响应头中的Server标记
     ServerHeader:  "Fiber",
 })
 */
+
+/*
+静态文件配置
+
+	app.Static("/", "./public", fiber.Static{
+	  Compress:      true, //是否开启压缩
+	  ByteRange:     true, //是否启用字节范围请求。
+	  Browse:        true, //是否启用目录浏览
+	  Index:         "index.html" //默认的访问
+	  CacheDuration: 10 * time.Second,//缓存时间
+	  MaxAge:        3600,
+	})
+*/
+
+/*
+	    增加响应头信息
+	    c.Accepts("png")
+
+		//c.Accepts("json", "text")     // "json"
+		//c.Accepts("application/json") // "application/json"
+
+		//新增的响应头信息---下面的字段会出现再响应头
+		c.Append("Link", "Test")
+		c.Append("Link", "http://google.com", "http://localhost")
+
+		//返回的APP路由堆栈
+		return c.JSON(c.App().Stack())
+
+		// 其他设置响应头的方法
+		  c.Set("Content-Type", "text/plain")
+	   // => "Content-type: text/plain"
+	   // ...
+	   c.Vary("Accept-Encoding", "Accept")
+*/
+
+// type H map[string]any
+// 这个在fiber里面是fiber.Map
 
 func main() {
 	app := fiber.New()
@@ -38,7 +80,13 @@ func main() {
 	app.Use("/user", PrintMethod)
 
 	// 匹配参数
-	app.Get("/api/book")
+	app.Get("/api/book", GetBook)
+
+	// 路由组
+	v1 := app.Group("/v1")
+	v1.Get("/he", Hello)
+	// 查看所有路由列表
+	// app.Stack()
 	app.Listen(addr)
 }
 
