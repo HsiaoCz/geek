@@ -225,3 +225,5 @@ func DeleteCookie(c *fiber.Ctx) error {
 	c.ClearCookie("user")
 	return c.SendString("删除cookie成功!")
 }
+
+// fiber中间件
