@@ -205,3 +205,194 @@ func CreateIndex(){
 }
 ```
 
+### 5、ES的文档操作
+
+**文档创建操作**
+
+1. 单个文档添加
+
+```go
+func CreateDoc(){
+    user := models.UserModel{
+    ID:        12,
+    UserName:  "lisi",
+    Age:       23,
+    NickName:  "夜空中最亮的lisi",
+    CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+    Title:     "今天天气很不错",
+  }
+  indexResponse, err := global.ESClient.Index().Index(user.Index()).BodyJson(user).Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Printf("%#v\n", indexResponse)
+}
+```
+
+2. 批量添加文档
+
+```go
+func DocCreateBatch() {
+
+  list := []models.UserModel{
+    {
+      ID:        12,
+      UserName:  "fengfeng",
+      NickName:  "夜空中最亮的枫枫",
+      CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+    },
+    {
+      ID:        13,
+      UserName:  "lisa",
+      NickName:  "夜空中最亮的丽萨",
+      CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+    },
+  }
+
+  bulk := global.ESClient.Bulk().Index(models.User{}.Index()).Refresh("true")
+  for _, model := range list {
+    req := elastic.NewBulkCreateRequest().Doc(model)
+    bulk.Add(req)
+  }
+  res, err := bulk.Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(res.Succeeded())
+}
+```
+
+mapping里面没有的字段，再创建的时候会动态的添加
+text类型的数据不能排序
+
+**删除文档**
+
+删除文档有两种：
+
+1. 根据id删除文档
+
+```go
+
+// 这里文档如果不存在会报错
+
+func DocDelete() {
+
+  // 这里Refresh 这个参数意思是是否立即删除索引的意思
+  // 如果设置为false 会过一段时间才会删除
+  deleteResponse, err := global.ESClient.Delete().
+    Index(models.UserModel{}.Index()).Id("tmcqfYkBWS69Op6Q4Z0t").Refresh("true").Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(deleteResponse)
+}
+```
+
+2. 根据id批量删除
+
+```go
+func DocDeleteBatch() {
+  idList := []string{
+    "tGcofYkBWS69Op6QHJ2g",
+    "tWcpfYkBWS69Op6Q050w",
+  }
+  bulk := global.ESClient.Bulk().Index(models.UserModel{}.Index()).Refresh("true")
+  for _, s := range idList {
+    req := elastic.NewBulkDeleteRequest().Id(s)
+    bulk.Add(req)
+  }
+  res, err := bulk.Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(res.Succeeded())  // 实际删除的文档切片
+}
+
+// 如果文档不存在，不会有错误， res.Succeeded() 为空
+
+```
+
+**查询文档**
+
+1. 列表查询
+
+```go
+func DocFind() {
+
+  limit := 2
+  page := 4
+  from := (page - 1) * limit
+  
+  // es的查询条件
+  // From和Size分别为分页查询的条件
+  // 这里代表查询全部数据  
+  query := elastic.NewBoolQuery()
+  res, err := global.ESClient.Search(models.User{}.Index()).Query(query).From(from).Size(limit).Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  count := res.Hits.TotalHits.Value  // 总数
+  fmt.Println(count)
+  for _, hit := range res.Hits.Hits {
+    fmt.Println(string(hit.Source))
+  }
+}
+```
+
+2. 精确匹配查询
+
+```go
+// 给query设置条件
+query := elastic.NewTermQuery("user_name", "fengfeng")
+```
+
+3. 模糊匹配
+
+模糊匹配主要查询text,也可以查询keyword
+模糊匹配keyword需要搜索完整的
+
+```go
+query := elastic.NewMatchQuery("nick_name", "夜空中最亮的枫枫")
+```
+
+4. 嵌套字段的查询
+
+```json
+"title": {
+    "type": "text",
+    "fields": {
+        "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+        }
+    }
+},
+```
+
+因为title是text类型，只能模糊匹配，但是需要精确匹配的时候，也能通过title.keyword的形式进行精确匹配
+
+```go
+query := elastic.NewTermQuery("title.keyword", "这是我的枫枫") // 精确匹配
+//query := elastic.NewMatchQuery("title", "这是我的枫枫")  // 模糊匹配
+```
+
+**更新文档**
+
+```go
+func DocUpdate() {
+  res, err := global.ESClient.Update().Index(models.UserModel{}.Index()).
+    Id("vmdnfYkBWS69Op6QEp2Y").Doc(map[string]any{
+    "user_name": "你好枫枫",
+  }).Do(context.Background())
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Printf("%#v\n", res)
+}
+```
