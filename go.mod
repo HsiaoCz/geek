@@ -7,6 +7,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/gofiber/fiber/v2 v2.49.2
 	github.com/google/uuid v1.3.1
+	github.com/gorilla/mux v1.8.0
 	golang.org/x/sync v0.3.0
 	google.golang.org/grpc v1.58.1
 	google.golang.org/protobuf v1.31.0
