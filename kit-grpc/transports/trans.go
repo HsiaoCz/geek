@@ -10,6 +10,7 @@ import (
 	"github.com/HsiaoCz/geek/kit-grpc/services"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/go-kit/log"
 	"github.com/gorilla/mux"
 )
 
@@ -100,15 +101,23 @@ func encodeResponse(ctx context.Context, w http.ResponseWriter, response interfa
 }
 
 // HTTP Server
-func NewHTTPServer(svc services.AddService) http.Handler {
+func NewHTTPServer(svc services.AddService, logger log.Logger) http.Handler {
+	// 添加日志
+	sum := endpoints.MakeSumEndpoint(svc)
+	// 使用log为sum添加日志
+	sum = endpoints.LoggingMiddleware(log.With(logger, "method", "sum"))(sum)
 	sumHandler := httptransport.NewServer(
-		endpoints.MakeSumEndpoint(svc),
+		sum,
 		decodeSumRequest,
 		encodeResponse,
 	)
 
+	// 给conca添加logger
+	concat := endpoints.MakeConcatEndpoint(svc)
+	// 使用logger
+	concat = endpoints.LoggingMiddleware(log.With(logger, "method", "concat"))(concat)
 	concatHandler := httptransport.NewServer(
-		endpoints.MakeConcatEndpoint(svc),
+		concat,
 		decodeConcatRequest,
 		encodeResponse,
 	)
