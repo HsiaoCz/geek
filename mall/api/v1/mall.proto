@@ -1,0 +1,26 @@
+syntax="proto3";
+
+package v1;
+
+option go_package="./;v1";
+
+service Mall{
+    rpc ListGoods (LGRequest) returns (LGResponse){};
+}
+
+message LGRequest{
+    string kind=1;
+    string maxPrice=2;
+    string minPrice=3;
+}
+
+message LGResponse{
+  repeated Goods goods=3;   
+}
+
+message Goods{
+    string name=1;
+    string price=2;
+    string count=3;
+    string id=4;
+}
