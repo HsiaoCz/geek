@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
 
 	"github.com/HsiaoCz/geek/anymore"
 )
@@ -19,9 +18,9 @@ func main() {
 	r.Listen("127.0.0.1:9091")
 }
 
-func UserRegister(w http.ResponseWriter, r *http.Request) {
+func UserRegister(c *anymore.Context) {
 	userR := new(UserR)
-	if err := json.NewDecoder(r.Body).Decode(userR); err != nil {
-		return 
+	if err := json.NewDecoder(c.R.Body).Decode(userR); err != nil {
+		return
 	}
 }
