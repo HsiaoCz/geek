@@ -6,12 +6,15 @@ import (
 
 type Engine struct {
 	router *router
+	*RouterGroup
+	groups []*RouterGroup
 }
 
 func App() *Engine {
-	return &Engine{
-		router: newRouter(),
-	}
+	engine := &Engine{router: newRouter()}
+	engine.RouterGroup = &RouterGroup{engine: engine}
+	engine.groups = []*RouterGroup{engine.RouterGroup}
+	return engine
 }
 
 // addRouter 添加路由的方法

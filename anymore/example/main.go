@@ -18,6 +18,10 @@ func main() {
 	r := anymore.App()
 	r.POST("/user/register", UserRegister)
 	r.GET("/user/id", GetUserById)
+	v1 := r.Group("/api/v1")
+	{
+		v1.GET("/name", GetName)
+	}
 	r.Listen("127.0.0.1:9091")
 }
 
@@ -43,5 +47,12 @@ func GetUserById(c *anymore.Context) {
 	c.JSON(http.StatusOK, anymore.H{
 		"Message": "获取成功",
 		"Data":    userID,
+	})
+}
+
+func GetName(c *anymore.Context) {
+	name := "lisi"
+	c.JSON(http.StatusOK, anymore.H{
+		"Message": "hello" + name,
 	})
 }
