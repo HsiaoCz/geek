@@ -54,3 +54,6 @@ func (g *RouterGroup) PATCH(pattern string, handler HandleFunc) {
 func (g *RouterGroup) CONNECT(pattern string, handler HandleFunc) {
 	g.addRouter("CONNECT", pattern, handler)
 }
+func (g *RouterGroup) Use(middleware ...HandleFunc) {
+	g.middlewares = append(g.middlewares, middleware...)
+}

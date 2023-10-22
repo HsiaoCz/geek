@@ -2,6 +2,7 @@ package anymore
 
 import (
 	"net/http"
+	"strings"
 )
 
 type Engine struct {
@@ -55,7 +56,14 @@ func (e *Engine) CONNECT(pattern string, handler HandleFunc) {
 
 // ServeHTTP 这个方法是引擎必须实现的
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var middlewares []HandleFunc
+	for _, group := range e.groups {
+		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.middlewares...)
+		}
+	}
 	c := newContext(w, r)
+	c.handlers = middlewares
 	e.router.hanle(c)
 }
 
