@@ -10,5 +10,7 @@ func getfiber() *fiber.App {
 }
 
 func main() {
-	router.Router(getfiber())
+	r := getfiber()
+	router.Router(r)
+	r.Listen("127.0.0.1:9900")
 }

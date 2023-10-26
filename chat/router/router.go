@@ -6,11 +6,16 @@ import (
 )
 
 func Router(r *fiber.App) {
-	v1 := r.Group("/api")
+	app := r.Group("/app")
 	{
-		auth := v1.Group("/v1")
+		// v1
+		v1 := app.Group("/v1")
 		{
-			auth.Post("/register", controller.AuthRegister)
+			// auther api
+			auth := v1.Group("/auth")
+			{
+				auth.Post("/register", controller.AuthRegister)
+			}
 		}
 	}
 }
