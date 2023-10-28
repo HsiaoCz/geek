@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/HsiaoCz/geek/iml/controller"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func RegisterRouter(r *gin.Engine) {
-	r.POST("api/v1/user/register", controller.UserRegister)
+func RegisterRouter(r *fiber.App) {
+	r.Post("api/v1/user/register", controller.UserRegister)
 }

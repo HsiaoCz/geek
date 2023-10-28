@@ -2,11 +2,9 @@ package main
 
 import (
 	"log"
-	"net/http"
-	"time"
 
 	"github.com/HsiaoCz/geek/iml/router"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 const (
@@ -14,14 +12,7 @@ const (
 )
 
 func main() {
-	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery())
+	r := fiber.New()
 	router.RegisterRouter(r)
-	srv := http.Server{
-		Handler:      r,
-		Addr:         addr,
-		WriteTimeout: 1500 * time.Millisecond,
-		ReadTimeout:  1500 * time.Millisecond,
-	}
-	log.Fatal(srv.ListenAndServe())
+	log.Fatal(r.Listen(addr))
 }

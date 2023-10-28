@@ -11,3 +11,18 @@ type Chat struct {
 type AppConf struct {
 	Port string `mapstructure:"port"`
 }
+
+type MysqlConf struct {
+	User   string `mapstructure:"user"`
+	Passwd string `mapstructure:"passwd"`
+	Host   string `mapstructure:"host"`
+	Port   string `mapstructure:"port"`
+	DBname string `mapstructure:"dbname"`
+}
+
+type RedisConf struct {
+	Host   string `mapstructure:"host"`
+	Port   string `mapstructure:"port"`
+	Passwd string `mapstructure:"passwd"`
+	DB     int    `mapstructure:"db"`
+}
