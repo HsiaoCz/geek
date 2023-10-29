@@ -1,0 +1,14 @@
+package main
+
+import (
+	"log"
+
+	"github.com/HsiaoCz/geek/Todo/router"
+	"github.com/gofiber/fiber/v2"
+)
+
+func main() {
+	r := fiber.New()
+	router.ResRoute(r)
+	log.Fatal(r.Listen("127.0.0.1:8090"))
+}
