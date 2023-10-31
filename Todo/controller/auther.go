@@ -21,11 +21,16 @@ func AuthRegister(c *fiber.Ctx) error {
 	if userR.Password != userR.RePassword {
 		return c.Status(http.StatusOK).JSON("请确认密码")
 	}
-	if strings.Contains(userR.Email, "@") {
+	if !strings.Contains(userR.Email, "@") {
 		return c.Status(http.StatusOK).JSON("请输入合法的邮箱")
 	}
-	return dao.AuthReg(userR.Username, userR.Password, utils.GenIdentity(), userR.Email)
-
+	if result := dao.AuthGetUserByUsernameAndEmail(userR.Username, userR.Email); result > 0 {
+		return c.Status(http.StatusOK).JSON("该用户当前已经存在")
+	}
+	if err := dao.AuthReg(userR.Username, userR.Password, utils.GenIdentity(), userR.Email); err == nil {
+		return c.Status(http.StatusOK).JSON("注册成功")
+	}
+	return err
 }
 
 func AuthLogin(c *fiber.Ctx) error {
@@ -34,11 +39,10 @@ func AuthLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	err = dao.AuthGetPasswd(userL.Username, userL.Password)
-	if err != nil {
+	if result := dao.AuthGetPasswdAndEmial(userL.Username, userL.Password, userL.Email); result == 0 {
 		return c.Status(http.StatusOK).JSON(fiber.Map{
 			"Message": "用户名或密码不正确",
 		})
 	}
-	return nil
+	return c.Status(http.StatusOK).JSON("登录成功!")
 }
