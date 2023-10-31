@@ -13,6 +13,7 @@ func ResRoute(r *fiber.App) {
 			auth := v1.Group("/auther")
 			{
 				auth.Post("/register", controller.AuthRegister)
+				auth.Post("/login", controller.AuthLogin)
 			}
 		}
 	}

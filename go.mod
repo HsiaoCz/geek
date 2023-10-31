@@ -8,6 +8,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/go-kit/log v0.2.0
 	github.com/gofiber/fiber/v2 v2.49.2
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/spf13/viper v1.17.0
