@@ -17,6 +17,15 @@ func ResRoute(r *gin.Engine) {
 				auth.POST("/login", controller.AuthLogin)
 				auth.GET("/todolist", middleware.VerifyAuther(), controller.AuthGetTodoList)
 			}
+			todo := v1.Group("/todo", middleware.VerifyAuther())
+			{
+				todo.POST("/add", controller.AddTodoList)
+				todo.PUT("/mod", controller.ModTodoList)
+				todo.GET("/get", controller.GetTodoList)
+				todo.DELETE("/delete", controller.DeleteTodoList)
+				todo.GET("/complete", controller.CompleteTodoList)
+				todo.DELETE("/clean", controller.CleanTodoList)
+			}
 		}
 	}
 }

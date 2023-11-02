@@ -4,9 +4,9 @@ Todo分为三个模块
 
 用户模块:
 
-- 用户注册
-- 用户登录
-- 查询待做事项
+- 用户注册 ok
+- 用户登录 ok
+- 查询待做事项 ok
 
 待做事项模块
 
@@ -26,4 +26,4 @@ Todo分为三个模块
   "email":"1231111@qq.com"
 }
 
-  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjowLCJleHAiOjE3MDY2OTY2MzUsImlzcyI6ImxlYWYifQ.R9PIZxPWrL68FAFAjkgk3motHBSExdJ6NzI8DT_Yv4g
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0NzI3OTc3NjYsImV4cCI6MTcwNjcwNzE2MCwiaXNzIjoibGVhZiJ9.FTolIe2Mba-qw435Cw05FJmCJeCQeEDy5ZBz2izUCJw
