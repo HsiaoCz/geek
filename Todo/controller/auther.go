@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// AuthRegister 用户注册
 func AuthRegister(c *fiber.Ctx) error {
 	userR := new(UserR)
 	err := c.BodyParser(userR)
@@ -33,6 +34,7 @@ func AuthRegister(c *fiber.Ctx) error {
 	return err
 }
 
+// AuthLogin 用户登录
 func AuthLogin(c *fiber.Ctx) error {
 	userL := new(UserL)
 	err := c.BodyParser(userL)
@@ -44,5 +46,23 @@ func AuthLogin(c *fiber.Ctx) error {
 			"Message": "用户名或密码不正确",
 		})
 	}
-	return c.Status(http.StatusOK).JSON("登录成功!")
+	user := dao.AuthGetUserInfoByUsernameAndPasswd(userL.Username, userL.Password)
+	token, err := utils.GenToken(user.Identity)
+	if err != nil {
+		return err
+	}
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"Message": "登录成功",
+		"Token":   token,
+	})
+}
+
+// AuthGetTodoList 获取用户的待做事项列表
+func AuthGetTodoList(c *fiber.Ctx) error {
+	userID := c.Locals("userID").(int64)
+	todolist := dao.GetToList(int64(userID))
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"Message": "获取待做事项成功",
+		"Data":    todolist,
+	})
 }

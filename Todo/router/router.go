@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/HsiaoCz/geek/Todo/controller"
+	"github.com/HsiaoCz/geek/Todo/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,6 +15,7 @@ func ResRoute(r *fiber.App) {
 			{
 				auth.Post("/register", controller.AuthRegister)
 				auth.Post("/login", controller.AuthLogin)
+				auth.Get("/todolist", controller.AuthGetTodoList, middleware.VerifyAuther())
 			}
 		}
 	}

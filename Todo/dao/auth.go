@@ -31,3 +31,10 @@ func AuthGetUserByUsernameAndEmail(username string, email string) int64 {
 	result := db.Where("username = ? AND email = ?", username, email).Find(user)
 	return result.RowsAffected
 }
+
+// 根据用户名和邮箱和密码去获取用户的信息
+func AuthGetUserInfoByUsernameAndPasswd(username string, password string) *model.User {
+	user := new(model.User)
+	db.Where("username = ? AND password = ?", username, utils.SetMd5Password(password)).Scan(user)
+	return user
+}
