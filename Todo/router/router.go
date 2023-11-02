@@ -3,19 +3,19 @@ package router
 import (
 	"github.com/HsiaoCz/geek/Todo/controller"
 	"github.com/HsiaoCz/geek/Todo/middleware"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 )
 
-func ResRoute(r *fiber.App) {
+func ResRoute(r *gin.Engine) {
 	app := r.Group("/app")
 	{
 		v1 := app.Group("/v1")
 		{
 			auth := v1.Group("/auther")
 			{
-				auth.Post("/register", controller.AuthRegister)
-				auth.Post("/login", controller.AuthLogin)
-				auth.Get("/todolist", controller.AuthGetTodoList, middleware.VerifyAuther())
+				auth.POST("/register", controller.AuthRegister)
+				auth.POST("/login", controller.AuthLogin)
+				auth.GET("/todolist", middleware.VerifyAuther(), controller.AuthGetTodoList)
 			}
 		}
 	}
