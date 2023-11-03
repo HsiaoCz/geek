@@ -26,12 +26,50 @@ func AddTodoList(c *gin.Context) {
 	if err := dao.AddTodoList(todo.UserId, todo.Content); err != nil {
 		log.Fatal(err)
 	}
-	c.JSON(http.StatusOK,gin.H{
-		"Message":"创建todo成功",
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "创建todo成功",
 	})
 }
-func ModTodoList(c *gin.Context)      {}
-func DeleteTodoList(c *gin.Context)   {}
-func GetTodoList(c *gin.Context)      {}
+func ModTodoList(c *gin.Context) {
+	todo := new(Todo)
+	if err := c.Bind(todo); err != nil {
+		log.Fatal(err)
+	}
+	if len(todo.Content) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"Message": "请输入内容",
+		})
+		return
+	}
+	if err := dao.ModTodoList(todo.Identity, todo.UserId, todo.Content); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Message": "更新失败",
+			"Error":   err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "更新成功",
+	})
+}
+func DeleteTodoList(c *gin.Context) {
+	todo := new(Todo)
+	if err := c.Bind(todo); err != nil {
+		log.Fatal(err)
+	}
+	if err := dao.DeleteTodoList(todo.Identity, todo.UserId); err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Message": "删除成功",
+	})
+}
+func GetTodoList(c *gin.Context) {
+	todo := new(Todo)
+	if err := c.Bind(todo); err != nil {
+		log.Fatal(err)
+	}
+	
+}
 func CompleteTodoList(c *gin.Context) {}
 func CleanTodoList(c *gin.Context)    {}

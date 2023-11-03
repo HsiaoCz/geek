@@ -14,6 +14,7 @@ type UserL struct {
 }
 
 type Todo struct {
-	UserId  int64  `json:"user_id"`
-	Content string `json:"Content"`
+	UserId   int64  `json:"user_id"`
+	Content  string `json:"content"`
+	Identity int64  `json:"identity"`
 }
