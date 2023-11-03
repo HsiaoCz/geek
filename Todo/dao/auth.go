@@ -38,3 +38,10 @@ func AuthGetUserInfoByUsernameAndPasswd(username string, password string) *model
 	db.Model(user).Where("username = ? AND password = ?", username, utils.SetMd5Password(password)).Scan(user)
 	return user
 }
+
+// 查找当前用户id是否存在
+func AuthGetUserID(userID int64) int64 {
+	user := new(model.User)
+	result := db.Where("user_id = ? ", userID).Find(user)
+	return result.RowsAffected
+}

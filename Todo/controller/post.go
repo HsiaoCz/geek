@@ -12,3 +12,8 @@ type UserL struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
+
+type Todo struct {
+	UserId  int64  `json:"user_id"`
+	Content string `json:"Content"`
+}
