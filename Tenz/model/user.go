@@ -16,7 +16,7 @@ type User struct {
 	Passwrod string `gorm:"column:passwrod;type:varchar(20);" json:"password"`
 	// 这里生成一个qq号
 	// 随机数可能不行，因为随机数可能会出现重复的
-	Identity int `gorm:"column:identity;type:int(11);" json:"identity"`
+	Identity int64 `gorm:"column:identity;type:int(11);" json:"identity"`
 	// 用户等级，这里默认为0
 	// 那么怎么提升等级呢?
 	Level    int    `gorm:"column:level;type:int(3);" json:"level"`
