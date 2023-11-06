@@ -28,3 +28,10 @@ func AuthCreate(username string, password string, phoneNumber string) error {
 	tx := db.Create(&user)
 	return tx.Error
 }
+
+// 利用identity和password来数据库里面查询一下记录
+func GetUserByIdentityAndPasswd(identity int, password string) int64 {
+	user := model.User{}
+	tx := db.Where("identity = ? AND password = ?", identity, utils.SetMd5Password(password)).Find(&user)
+	return tx.RowsAffected
+}

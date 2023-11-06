@@ -14,4 +14,5 @@ type UserL struct {
 	Identity    int    `json:"identity"`
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
+	Code        int    `json:"code"`
 }
