@@ -92,3 +92,18 @@ func AutherLogin(c *fiber.Ctx) error {
 		"Message": "登录成功",
 	})
 }
+
+// 修改自身的信息
+func AuthModInfo(c *fiber.Ctx) error {
+	return nil
+}
+
+// 显示好友
+func AuthListFrident(c *fiber.Ctx) error {
+	return nil
+}
+
+// 添加好友
+func AuthAddFriends(c *fiber.Ctx) error {
+	return nil
+}

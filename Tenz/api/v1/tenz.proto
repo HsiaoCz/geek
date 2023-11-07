@@ -1,0 +1,22 @@
+syntax="proto3";
+
+package v1;
+
+option go_package="./;v1";
+
+service TenzService{
+    rpc ListFriend (ListFriRequest) returns (ListFriResponse){};
+}
+
+// 用户
+message User{
+
+}
+
+message ListFriRequest{
+
+}
+
+message ListFriResponse{
+
+}
