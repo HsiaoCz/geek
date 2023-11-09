@@ -1,9 +1,13 @@
-package main
+package api
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/HsiaoCz/geek/Test/structure/model"
 )
 
 type APIServer struct {
@@ -42,7 +46,31 @@ func (a *APIServer) handleCount(w http.ResponseWriter, r *http.Request) {
 
 func (a *APIServer) handleCreateCount(w http.ResponseWriter, r *http.Request) {}
 
-func (a *APIServer) handleGetCount(w http.ResponseWriter, r *http.Request) {}
+func (a *APIServer) handleGetCount(w http.ResponseWriter, r *http.Request) {
+	countID := r.URL.Query().Get("count_id")
+	cId, err := strconv.Atoi(countID)
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("please offer useful count_id"))
+		return
+	}
+	w.Header().Set("Content-Type", "application")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(&model.Count{
+		FirstName: "bob",
+		LastName:  "phoniex",
+		Identity:  int64(cId),
+		Money:     "12222",
+		Dart: []model.Goods{
+			{
+				Name:      "三角内裤",
+				Price:     "122",
+				RepoCount: 12222,
+				Describe:  "买了绝对的不亏",
+			},
+		},
+	})
+}
 
 func (a *APIServer) hanldeModCount(w http.ResponseWriter, r *http.Request) {}
 

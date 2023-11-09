@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/HsiaoCz/geek/Test/structure/api"
+)
 
 const (
 	addr = "127.0.0.1:3033"
@@ -8,6 +12,6 @@ const (
 
 func main() {
 	fmt.Println("hello mono")
-	s := NewAPIServer(addr)
+	s := api.NewAPIServer(addr)
 	s.Run()
 }
