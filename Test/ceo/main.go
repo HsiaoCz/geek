@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 func HandleSayHelloToCEOLittleFan(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -14,7 +17,19 @@ func HandleSayHelloToCEOLittleFan(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/xiaofanzong", HandleSayHelloToCEOLittleFan)
+	http.HandleFunc("/ceofan", HandleCEOFan)
 	http.ListenAndServe("127.0.0.1:9091", nil)
 }
 
-
+func HandleCEOFan(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{
+			"Message": "小樊总今天真好看!",
+		})
+	default:
+		w.WriteHeader(http.StatusNotFound)
+	}
+}
