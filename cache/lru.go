@@ -81,7 +81,7 @@ func (c *Cache) RemoveOldest() {
 		c.ll.Remove(ele)
 		// 对元素进行断言
 		kv := ele.Value.(*entry)
-        // 删除map里的对应的键值对
+		// 删除map里的对应的键值对
 		// 这里就体现出entry 结构体里面放key的好处了
 		delete(c.cache, kv.key)
 		// 重新计算当前内存的使用状况
@@ -92,4 +92,32 @@ func (c *Cache) RemoveOldest() {
 			c.OnEvicted(kv.key, kv.value)
 		}
 	}
+}
+
+// 新增值
+// 如果存在
+// 那么更新该节点的值
+// 更新完毕之后将该节点移动到队列的末尾
+// 如果key不存在，那么在队尾节点新增值
+// 新增值完毕后，更新当前使用内存的总量，如果超过设定的最大的值
+// 那么移除最近最少访问的节点
+func (c *Cache) Add(key string, value Value) {
+	if ele, ok := c.cache[key]; ok {
+		c.ll.MoveToFront(ele)
+		kv := ele.Value.(*entry)
+		c.nbytes += int64(value.Len()) - int64(kv.value.Len())
+		kv.value = value
+	} else {
+		ele := c.ll.PushFront(&entry{key: key, value: value})
+		c.cache[key] = ele
+		c.nbytes += int64(len(key)) + int64(value.Len())
+	}
+	for c.maxBytes != 0 && c.maxBytes < c.nbytes {
+		c.RemoveOldest()
+	}
+}
+
+// 返回长度
+func (c *Cache) Len() int {
+	return c.ll.Len()
 }
