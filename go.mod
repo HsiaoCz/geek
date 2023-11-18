@@ -12,6 +12,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
+	github.com/matryer/is v1.4.1
 	github.com/spf13/viper v1.17.0
 	golang.org/x/sync v0.3.0
 	google.golang.org/grpc v1.59.0
