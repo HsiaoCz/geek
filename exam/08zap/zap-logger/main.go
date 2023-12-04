@@ -45,3 +45,8 @@ func main() {
 	simpleHttpGet("www.google.com")
 	simpleHttpGet("http://www.google.com")
 }
+
+// 日志记录器方法的语法是这样的
+// func (log *Logger) MethodXXX(msg string, fields ...Field)
+// 其中MethodXXX是一个可变参数函数，可以是Info / Error/ Debug / Panic等。每个方法都接受一个消息字符串和任意数量的zapcore.Field场参数。
+// 每个zapcore.Field其实就是一组键值对参数。
