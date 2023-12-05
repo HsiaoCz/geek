@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"net/http"
 	"os"
 
@@ -27,12 +28,19 @@ var sugarLogger *zap.SugaredLogger
 func getEncoder() zapcore.Encoder {
 	// 如果希望将JsonEncoder 更改为普通的log Encoder
 	// return zapcore.NewConsoleEncoder(zap.NewProductionEncoderConfig())
-	return zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+	encoderConfig := zap.NewProductionEncoderConfig()
+	// 修改时间编码器
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	// 在日志文件中使用大写字母记录日志级别
+	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
 func getLoggerWrite() zapcore.WriteSyncer {
 	file, _ := os.Create("./test.log")
-	return zapcore.AddSync(file)
+	// 多位置输出日志
+	ws := io.MultiWriter(file, os.Stdout)
+	return zapcore.AddSync(ws)
 }
 
 func InitLogger() {
@@ -40,8 +48,24 @@ func InitLogger() {
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 
-	logger := zap.New(core)
+	// 添加将调用函数信息记录到日志中的功能
+	// logger := zap.New(core, zap.AddCaller())
+	// 当我们不是直接使用初始化好的logger实例记录日志，而是将其包装成一个函数等，此时日录日志的函数调用链会增加，想要获得准确的调用信息就需要通过AddCallerSkip函数来跳过
+	logger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 	sugarLogger = logger.Sugar()
+}
+
+func Initlogger() *zap.Logger {
+	encoder := getEncoder()
+	// test.log 记录全量日志
+	logF, _ := os.Create("./test.log")
+	c1 := zapcore.NewCore(encoder, zapcore.AddSync(logF), zapcore.DebugLevel)
+	// test.err.log 记录Error级别的日志
+	errF, _ := os.Create("./test.err.log")
+	c2 := zapcore.NewCore(encoder, zapcore.AddSync(errF), zap.ErrorLevel)
+	// 使用NewTee将c1和c2合并到core
+	core := zapcore.NewTee(c1, c2)
+	return zap.New(core, zap.AddCaller())
 }
 
 func simpleHttpGet(url string) {
