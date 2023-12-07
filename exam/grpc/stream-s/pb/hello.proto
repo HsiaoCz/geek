@@ -6,7 +6,7 @@ option go_package="./;pb";
 
 service greeter{
     rpc Login(LoginRequest) returns (LoginResponse){};
-    rpc Hello(HelloRequest) returns (HelloResponse){};
+    rpc Hello(HelloRequest) returns (stream HelloResponse){};
     rpc HandleHi (stream HIRequest) returns (HiResponse){};
     rpc HandleChat (stream ChatRequest) returns (stream ChatResponse){};
 }

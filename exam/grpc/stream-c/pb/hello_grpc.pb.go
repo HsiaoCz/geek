@@ -30,7 +30,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GreeterClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error)
+	Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (Greeter_HelloClient, error)
 	HandleHi(ctx context.Context, opts ...grpc.CallOption) (Greeter_HandleHiClient, error)
 	HandleChat(ctx context.Context, opts ...grpc.CallOption) (Greeter_HandleChatClient, error)
 }
@@ -52,17 +52,40 @@ func (c *greeterClient) Login(ctx context.Context, in *LoginRequest, opts ...grp
 	return out, nil
 }
 
-func (c *greeterClient) Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloResponse, error) {
-	out := new(HelloResponse)
-	err := c.cc.Invoke(ctx, Greeter_Hello_FullMethodName, in, out, opts...)
+func (c *greeterClient) Hello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (Greeter_HelloClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[0], Greeter_Hello_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &greeterHelloClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Greeter_HelloClient interface {
+	Recv() (*HelloResponse, error)
+	grpc.ClientStream
+}
+
+type greeterHelloClient struct {
+	grpc.ClientStream
+}
+
+func (x *greeterHelloClient) Recv() (*HelloResponse, error) {
+	m := new(HelloResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func (c *greeterClient) HandleHi(ctx context.Context, opts ...grpc.CallOption) (Greeter_HandleHiClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[0], Greeter_HandleHi_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[1], Greeter_HandleHi_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +119,7 @@ func (x *greeterHandleHiClient) CloseAndRecv() (*HiResponse, error) {
 }
 
 func (c *greeterClient) HandleChat(ctx context.Context, opts ...grpc.CallOption) (Greeter_HandleChatClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[1], Greeter_HandleChat_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[2], Greeter_HandleChat_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +154,7 @@ func (x *greeterHandleChatClient) Recv() (*ChatResponse, error) {
 // for forward compatibility
 type GreeterServer interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
-	Hello(context.Context, *HelloRequest) (*HelloResponse, error)
+	Hello(*HelloRequest, Greeter_HelloServer) error
 	HandleHi(Greeter_HandleHiServer) error
 	HandleChat(Greeter_HandleChatServer) error
 	mustEmbedUnimplementedGreeterServer()
@@ -144,8 +167,8 @@ type UnimplementedGreeterServer struct {
 func (UnimplementedGreeterServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedGreeterServer) Hello(context.Context, *HelloRequest) (*HelloResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Hello not implemented")
+func (UnimplementedGreeterServer) Hello(*HelloRequest, Greeter_HelloServer) error {
+	return status.Errorf(codes.Unimplemented, "method Hello not implemented")
 }
 func (UnimplementedGreeterServer) HandleHi(Greeter_HandleHiServer) error {
 	return status.Errorf(codes.Unimplemented, "method HandleHi not implemented")
@@ -184,22 +207,25 @@ func _Greeter_Login_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_Hello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _Greeter_Hello_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(HelloRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(GreeterServer).Hello(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Greeter_Hello_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).Hello(ctx, req.(*HelloRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(GreeterServer).Hello(m, &greeterHelloServer{stream})
+}
+
+type Greeter_HelloServer interface {
+	Send(*HelloResponse) error
+	grpc.ServerStream
+}
+
+type greeterHelloServer struct {
+	grpc.ServerStream
+}
+
+func (x *greeterHelloServer) Send(m *HelloResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _Greeter_HandleHi_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -265,12 +291,13 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Login",
 			Handler:    _Greeter_Login_Handler,
 		},
-		{
-			MethodName: "Hello",
-			Handler:    _Greeter_Hello_Handler,
-		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Hello",
+			Handler:       _Greeter_Hello_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "HandleHi",
 			Handler:       _Greeter_HandleHi_Handler,
