@@ -1,0 +1,15 @@
+syntax="proto3";
+
+package gv1;
+
+option go_package="./;gv1";
+
+service WhatUserPart{
+    rpc UserSinup (SinupRequest) returns (SinupResponse){};
+    rpc UserLogin (LoginRequest) returns (LoginResponse){};
+}
+
+message SinupRequest{}
+message SinupResponse{}
+message LoginRequest{}
+message LoginResponse{}
