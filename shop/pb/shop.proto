@@ -1,0 +1,13 @@
+syntax="proto3";
+
+package pb;
+
+service Shop{
+    rpc UserSignup(SignupRequest) returns (SignupResponse){}
+    rpc UserLogin(LoginRequest) returns (LoginResponse){}
+}
+
+message SignupRequest{}
+message SignupResponse{}
+message LoginRequest{}
+message LoginResponse{}
