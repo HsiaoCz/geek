@@ -1,10 +1,10 @@
 syntax="proto3";
 
-package pb;
+package uv1;
 
-option go_package="./;pb";
+option go_package="./;uv1";
 
-service Shop{
+service UserService{
     rpc UserSignup(SignupRequest) returns (SignupResponse){}
     rpc UserLogin(LoginRequest) returns (LoginResponse){}
 }
