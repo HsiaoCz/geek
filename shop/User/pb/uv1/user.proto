@@ -1,0 +1,15 @@
+syntax="proto3";
+
+package uv1;
+
+option go_package="./;uv1";
+
+service UserService{
+    rpc UserSignup(SignupRequest) returns (SignupResponse){}
+    rpc UserLogin(LoginRequest) returns (LoginResponse){}
+}
+
+message SignupRequest{}
+message SignupResponse{}
+message LoginRequest{}
+message LoginResponse{}

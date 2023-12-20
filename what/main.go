@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/HsiaoCz/geek/shop/route"
+	"github.com/HsiaoCz/geek/what/route"
 )
 
 var (
