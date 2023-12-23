@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/HsiaoCz/geek/Templ/model"
 	"github.com/HsiaoCz/geek/Templ/view/user"
 	"github.com/labstack/echo/v4"
 )
@@ -24,5 +25,6 @@ func (u UserHandler) UserSignup(c echo.Context) error {
 }
 
 func (u UserHandler) Show(c echo.Context) error {
-	return render(c, user.Show())
+	users := model.User{Email: "a@gg.com"}
+	return render(c, user.Show(users))
 }
