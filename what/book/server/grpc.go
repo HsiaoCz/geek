@@ -14,6 +14,6 @@ func RegisterGrpc(addr string, network string) error {
 		return err
 	}
 	server := grpc.NewServer()
-	pb.RegisterBookServiceServer(server, service.NewBookService())
+	pb.RegisterWhatServer(server, service.NewBookService())
 	return server.Serve(conn)
 }

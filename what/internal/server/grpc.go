@@ -3,7 +3,7 @@ package server
 import (
 	"net"
 
-	"github.com/HsiaoCz/geek/what/internal/pb/gv1"
+	"github.com/HsiaoCz/geek/what/internal/pb"
 	"github.com/HsiaoCz/geek/what/internal/service"
 	"google.golang.org/grpc"
 )
@@ -14,6 +14,6 @@ func RegGrpc(network string, addr string) error {
 		return err
 	}
 	s := grpc.NewServer()
-	gv1.RegisterWhatUserPartServer(s, service.New())
+	pb.RegisterWhatServer(s, service.New())
 	return s.Serve(listen)
 }

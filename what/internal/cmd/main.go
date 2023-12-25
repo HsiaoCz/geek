@@ -8,7 +8,7 @@ import (
 
 var (
 	network = "tcp"
-	addr    = "127.0.0.1:3003"
+	addr    = "127.0.0.1:3002"
 )
 
 func main() {

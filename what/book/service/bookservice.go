@@ -8,7 +8,7 @@ import (
 )
 
 type BookService struct {
-	pb.UnimplementedBookServiceServer
+	pb.UnimplementedWhatServer
 }
 
 func (b *BookService) GetBook(ctx context.Context, in *pb.GetBookRequest) (*pb.GetBookResponse, error) {
