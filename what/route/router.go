@@ -31,6 +31,10 @@ func Router(addr string) error {
 				user.Get("/id", av1.GetUserByID)
 
 			}
+			book := v1.Group("/book")
+			{
+				book.Get("/id", av1.GetBookByID)
+			}
 		}
 	}
 	return r.Listen(addr)

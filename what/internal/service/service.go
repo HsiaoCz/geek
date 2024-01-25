@@ -3,21 +3,25 @@ package service
 import (
 	"context"
 
-	"github.com/HsiaoCz/geek/what/internal/pb/gv1"
+	"github.com/HsiaoCz/geek/what/internal/data"
+	"github.com/HsiaoCz/geek/what/internal/pb"
 )
 
-type UserCase struct {
-	gv1.UnimplementedWhatUserPartServer
+type UserService struct {
+	pb.UnimplementedWhatServer
+	ur data.UserRepo
 }
 
-func (u *UserCase) UserSinup(ctx context.Context, in *gv1.SinupRequest) (*gv1.SinupResponse, error) {
-	return &gv1.SinupResponse{Msg: "注册成功", Code: 10000}, nil
+func (u *UserService) UserSinup(ctx context.Context, in *pb.SinupRequest) (*pb.SinupResponse, error) {
+	return &pb.SinupResponse{Msg: "注册成功", Code: 10000}, nil
 }
 
-func (u *UserCase) UserLogin(ctx context.Context, in *gv1.LoginRequest) (*gv1.LoginResponse, error) {
-	return &gv1.LoginResponse{Msg: "登录成功", Code: 10000}, nil
+func (u *UserService) UserLogin(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
+	return &pb.LoginResponse{Msg: "登录成功", Code: 10000}, nil
 }
 
-func New() *UserCase {
-	return &UserCase{}
+func New(ur data.UserRepo) *UserService {
+	return &UserService{
+		ur: ur,
+	}
 }
