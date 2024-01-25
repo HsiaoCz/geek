@@ -28,6 +28,7 @@ func Router(addr string) error {
 
 				user.Post("/sinup", av1.UserSinup)
 				user.Post("/login", av1.UserLogin)
+				user.Get("/id", av1.GetUserByID)
 
 			}
 		}

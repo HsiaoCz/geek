@@ -14,3 +14,9 @@ type UserL struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 }
+
+// request book
+type Book struct {
+	Identity int64  `json:"identity"`
+	Name     string `json:"name"`
+}

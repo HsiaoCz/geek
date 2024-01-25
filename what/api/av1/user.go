@@ -95,3 +95,7 @@ func UserLogin(c *fiber.Ctx) error {
 		"Code":    result.GetCode(),
 	})
 }
+
+func GetUserByID(c *fiber.Ctx) error {
+	return nil
+}
